@@ -1,0 +1,6 @@
+
+[19-Aug-2021 01:38:36 America/New_York] PHP Fatal error:  Uncaught Error: Class 'Registry' not found in /home/digifnig/crm.globaltech360.com/clients/builder/bootstrap.php:56
+Stack trace:
+#0 /home/digifnig/crm.globaltech360.com/clients/index.php(36): require_once()
+#1 {main}
+  thrown in /home/digifnig/crm.globaltech360.com/clients/builder/bootstrap.php on line 56
