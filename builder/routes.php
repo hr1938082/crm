@@ -151,6 +151,7 @@ $router->get('project/add', 'ProjectController@indexAdd@2');
 $router->get('project/edit', 'ProjectController@indexEdit@2');
 $router->post('project/action', 'ProjectController@indexAction@2');
 $router->post('project/delete', 'ProjectController@indexDelete@2');
+$router->post('project/assign/staff', 'ProjectController@AssignStaff@2');
 
 $router->post('make_comment', 'ProjectController@makeComment@2');
 

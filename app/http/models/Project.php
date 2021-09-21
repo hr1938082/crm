@@ -1,32 +1,27 @@
 <?php
 
 /**
-* Project
-*/
+ * Project
+ */
 class Project extends Model
 {
 	public function getProjects($user = false)
 	{
- 		if (!$user) {
-		$query = $this->model->query("SELECT p.id, p.name, p.customer, p.description, p.order_id, p.website_id, p.completed, p.date_of_joining, c.company FROM `" . DB_PREFIX . "projects` AS p LEFT JOIN `" . DB_PREFIX . "contacts` AS c ON c.id = p.customer ORDER BY p.date_of_joining DESC");
- 		} else {
- 	$query = $this->model->query("SELECT p.id, p.name, p.customer, p.description, p.order_id, p.website_id, p.completed, p.date_of_joining, c.company FROM `" . DB_PREFIX . "projects` AS p LEFT JOIN `" . DB_PREFIX . "contacts` AS c ON c.id = p.customer WHERE c.user_id = ? ORDER BY p.date_of_joining DESC",array($user));
- 		}
+		if (!$user) {
+			$query = $this->model->query("SELECT p.id, p.name, p.customer, p.description, p.order_id, p.website_id, p.completed, p.date_of_joining, c.company FROM `" . DB_PREFIX . "projects` AS p LEFT JOIN `" . DB_PREFIX . "contacts` AS c ON c.id = p.customer ORDER BY p.date_of_joining DESC");
+		} else {
+			$query = $this->model->query("SELECT p.id, p.name, p.customer, p.description, p.order_id, p.website_id, p.completed, p.date_of_joining, c.company FROM `" . DB_PREFIX . "projects` AS p LEFT JOIN `" . DB_PREFIX . "contacts` AS c ON c.id = p.customer WHERE c.user_id = ? ORDER BY p.date_of_joining DESC", array($user));
+		}
 		return $query->rows;
 	}
 
-	public function getCustomers($user = null,$email = null)
+	public function getCustomers($user = null, $email = null)
 	{
-		if ($user != null) 
-		{
-			$query = $this->model->query("SELECT `id`, `company` FROM `" . DB_PREFIX . "contacts` WHERE `user_id` = ?",array($user));
-		} 
-		else if($email != null) 
-		{
-			$query = $this->model->query("SELECT `id`, `company` FROM `" . DB_PREFIX . "contacts` WHERE `email` = ?",array($email));
-		}
-		else
-		{
+		if ($user != null) {
+			$query = $this->model->query("SELECT `id`, `company` FROM `" . DB_PREFIX . "contacts` WHERE `user_id` = ?", array($user));
+		} else if ($email != null) {
+			$query = $this->model->query("SELECT `id`, `company` FROM `" . DB_PREFIX . "contacts` WHERE `email` = ?", array($email));
+		} else {
 			$query = $this->model->query("SELECT `id`, `company` FROM `" . DB_PREFIX . "contacts`");
 		}
 		return $query->rows;
@@ -68,12 +63,20 @@ class Project extends Model
 
 	public function updateProject($data)
 	{
-		$id = (int)$data["id"];
-		$query1 = $this->model->query("Select `order_id` from `". DB_PREFIX . "projects` WHERE `id` = ?", array((int)$id));
+		$id = $data["id"];
+		$query1 = $this->model->query("Select `order_id` from `" . DB_PREFIX . "projects` WHERE `id` = ?", array((int)$id));
 		$order_id = $query1->rows[0]["order_id"];
 		$query = $this->model->query("UPDATE `" . DB_PREFIX . "projects` SET `name` = ?, `description` = ?, `customer` = ?, `billing_method` = ?, `currency` = ?, `rate_hour` = ?, `project_hour` = ?, `total_cost` = ?, `staff` = ?, `task` = ?, `website_id`=?, `completed` = ?, `start_date` = ?, `due_date` = ? WHERE `id` = ? ", array($this->model->escape($data['name']), $data['description'], (int)$data['customer'], (int)$data['billingmethod'], (int)$data['currency'], (int)$data['ratehour'], (int)$data['projecthour'], (int)$data['totalcost'], $data['staff'], $data['task'], $data['website_id'], $data['completed'], $data['start_date'], $data['due_date'], (int)$data['id']));
-		var_dump($query);
-		die;
+		if ($query->num_rows > 0) {
+			return $order_id;
+		} else {
+			return false;
+		}
+	}
+
+	public function updateStaff($data)
+	{
+		$query = $this->model->query("UPDATE `" . DB_PREFIX . "projects` SET `staff` = ? WHERE `id` = ?", array($data['staff'], (int)$data['id']));
 		if ($query->num_rows > 0) {
 			return true;
 		} else {
@@ -93,13 +96,10 @@ class Project extends Model
 
 	public function insertPayId($data)
 	{
-		$query = $this->model->query("UPDATE `".DB_PREFIX."projects` SET `payment_id` = ? WHERE `id` = ?",array($data['payment_id'],$data['id']));
-		if($query->num_rows > 0)
-		{
+		$query = $this->model->query("UPDATE `" . DB_PREFIX . "projects` SET `payment_id` = ? WHERE `id` = ?", array($data['payment_id'], $data['id']));
+		if ($query->num_rows > 0) {
 			return true;
-		}
-		else
-		{
+		} else {
 			return false;
 		}
 	}
@@ -116,9 +116,9 @@ class Project extends Model
 
 	public function deleteProject($id)
 	{
-		$query1 = $this->model->query("Select `order_id` from `". DB_PREFIX . "projects` WHERE `id` = ?", array((int)$id));
+		$query1 = $this->model->query("Select `order_id` from `" . DB_PREFIX . "projects` WHERE `id` = ?", array((int)$id));
 		$order_id = $query1->rows[0]["order_id"];
-		$query = $this->model->query("DELETE FROM `" . DB_PREFIX . "projects` WHERE `id` = ?", array((int)$id ));
+		$query = $this->model->query("DELETE FROM `" . DB_PREFIX . "projects` WHERE `id` = ?", array((int)$id));
 		if ($query->num_rows > 0) {
 			return $order_id;
 		} else {
